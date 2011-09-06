@@ -1,13 +1,13 @@
 package eu.javaspecialists.course.master.threads.exercise222;
 
 public class BankAccount {
-    private int balance;
+    private  int balance;
 
     public BankAccount(int initial) {
         balance = initial;
     }
 
-    public void deposit(int amount) {
+    public  void deposit(int amount) {
         balance = balance + amount;
     }
 
@@ -15,7 +15,7 @@ public class BankAccount {
         deposit(-amount);
     }
 
-    public int getBalance() {
+    public  int getBalance() {
         return balance;
     }
 }
