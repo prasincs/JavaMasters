@@ -1,10 +1,12 @@
 package eu.javaspecialists.course.master.threads.exercise211;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import sun.jvm.hotspot.runtime.Threads;
 
 import java.security.PrivateKey;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,10 +16,13 @@ public class ThreadPool {
     // Create a Condition field
     // Create a LinkedList field containing Runnable
     private ThreadGroup group = new ThreadGroup("ThreadPool");
-    private ReentrantLock lock = new ReentrantLock();
-    private Condition workHasArrived = lock.newCondition();
+    //private ReentrantLock lock = new ReentrantLock();
+    //private Condition workHasArrived = lock.newCondition();
 
-    private LinkedList<Runnable> workQueue = new LinkedList<Runnable>();
+    //private LinkedList<Runnable> workQueue = new LinkedList<Runnable>();
+    private LinkedBlockingDeque<Runnable> workQueue =
+            new LinkedBlockingDeque<Runnable>();
+
     private volatile boolean running = true;
 
     public ThreadPool(int poolSize) {
@@ -35,17 +40,17 @@ public class ThreadPool {
         // remove the first job from the LinkedList and return it
         if (Thread.interrupted())
             throw new InterruptedException();
-        lock.lock();
+        //lock.lock();
         Runnable runnable = null;
-        while (workQueue.isEmpty()){
-            workHasArrived.await();
-        }
-
-        try {
-            runnable = workQueue.removeFirst();
-        } finally {
-            lock.unlock();
-        }
+//        while (workQueue.isEmpty()){
+//            workHasArrived.await();
+//        }
+        //try {
+            runnable = workQueue.take();
+        //    workHasArrived.await();
+        //} finally {
+        //    lock.unlock();
+        //}
         return runnable;
         //throw new UnsupportedOperationException("not implemented");
     }
@@ -55,14 +60,14 @@ public class ThreadPool {
             throw new InterruptedException();
         // lock the lock.
         // Add the job to the LinkedList and signal the condition
-        lock.lock();
+        //lock.lock();
         //System.out.println("Job submitted");
-        try {
+        //try {
             workQueue.add(job);
-            workHasArrived.signal();
-        } finally {
-            lock.unlock();
-        }
+        //    workHasArrived.signal();
+        //} finally {
+        //    lock.unlock();
+        //}
 
 
     }
@@ -70,13 +75,10 @@ public class ThreadPool {
     public int getRunQueueLength() {
         // return the length of the LinkedList
         // remember to also lock the lock!
-        lock.lock();
+        //lock.lock();
         int length = 0;
-        try{
-            length = workQueue.size();
-        }finally {
-            lock.unlock();
-        }
+        length = workQueue.size();
+
         return length;
         //throw new UnsupportedOperationException("not implemented");
     }
@@ -93,7 +95,7 @@ public class ThreadPool {
 
 
     private class Worker extends Thread {
-        private volatile boolean running = true;
+
         public Worker(ThreadGroup group, String name) {
             super(group, name);
         }

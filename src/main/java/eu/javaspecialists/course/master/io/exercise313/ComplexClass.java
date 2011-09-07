@@ -3,12 +3,12 @@ package eu.javaspecialists.course.master.io.exercise313;
 import java.io.*;
 
 public class ComplexClass implements Serializable {
-    private final int i;
-    private final long l;
-    private final String s;
-    private final boolean b;
-    private final Double d;
-    private final Float f;
+    private int i;
+    private long l;
+    private String s;
+    private boolean b;
+    private Double d;
+    private Float f;
 
     public ComplexClass(int i, long l, String s, boolean b, Double d, float f) {
         this.i = i;
@@ -54,5 +54,44 @@ public class ComplexClass implements Serializable {
         return result;
     }
 
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeInt(i);
+        out.writeLong(l);
+        if (s == null){
+            out.writeUTF("{null}");
+        }else {
+            out.writeUTF(s);
+        }
+        out.writeBoolean(b);
+        if (d == null){
+            out.writeDouble(Double.POSITIVE_INFINITY);
+        }else {
+            out.writeDouble(d);
+        }
+        if (f == null){
+            out.writeFloat(Float.POSITIVE_INFINITY);
+        }else {
+            out.writeFloat(f);
+        }
+
+    }
+
+
+    private void readObject(ObjectInputStream in) throws IOException {
+       this.i = in.readInt();
+       this.l = in.readLong();
+       this.s = in.readUTF();
+       if (s.equals("{null}"))
+           this.s = null;
+
+
+       this.b = in.readBoolean();
+       this.d = in.readDouble();
+       if (d.equals(Double.POSITIVE_INFINITY))
+           this.d = null;
+       this.f = in.readFloat();
+       if (f.equals(Float.POSITIVE_INFINITY))
+           this.f  = null;
+    }
 
 }

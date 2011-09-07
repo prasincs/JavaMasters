@@ -3,7 +3,7 @@ package eu.javaspecialists.course.master.threads.exercise242;
 import java.util.*;
 
 public class ProcessTaskProxy {
-    HashMap map = null;
+
 
 //    public void printRCEKey(){
 //        
