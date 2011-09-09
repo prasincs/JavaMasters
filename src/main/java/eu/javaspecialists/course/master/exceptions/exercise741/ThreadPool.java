@@ -15,6 +15,11 @@ public class ThreadPool {
      * @see #MAXIMUM_POOL_SIZE
      */
     public ThreadPool(int poolSize) {
+        if (poolSize <= 0 || poolSize > MAXIMUM_POOL_SIZE){
+            throw new IllegalArgumentException("Pool size needs to be a number 1 or higher upto "+ MAXIMUM_POOL_SIZE);
+        }
+        assert poolSize != 0: poolSize;
+
         for (int i = 0; i < poolSize; i++) {
             ThreadPool.Worker worker = new ThreadPool.Worker(group, "Worker" + i);
             worker.setDaemon(false);
@@ -26,6 +31,9 @@ public class ThreadPool {
      * @param job
      */
     public void submit(Runnable job) {
+        if (job == null){
+            throw  new NullPointerException("Job cannot be Null");
+        }
         runQueue.add(job);
     }
 

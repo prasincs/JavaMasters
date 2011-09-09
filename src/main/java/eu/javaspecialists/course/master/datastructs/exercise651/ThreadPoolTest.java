@@ -21,8 +21,9 @@ public class ThreadPoolTest {
                 Thread.currentThread().interrupt();
             }
             if (expectedSequence != nextSequence++) {
+
                 throw new IllegalStateException("Job " + expectedSequence
-                        + " out of sequence");
+                        + " out of sequence got seq " + nextSequence);
             }
         }
     }

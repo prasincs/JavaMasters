@@ -16,6 +16,7 @@ public class EndianTestWrite {
         FileChannel channel = file.getChannel();
         int size = (Long.SIZE + Short.SIZE + Integer.SIZE +
                 Long.SIZE + Character.SIZE) / 8;
+
         MappedByteBuffer buffer = channel
                 .map(FileChannel.MapMode.READ_WRITE, 0, size);
         buffer.order(ByteOrder.LITTLE_ENDIAN);

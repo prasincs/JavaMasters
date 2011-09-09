@@ -1,10 +1,15 @@
 package eu.javaspecialists.course.master.datastructs.exercise651;
 
+import clojure.lang.PersistentTreeMap;
+
+import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ThreadPool {
     private final ThreadGroup group = new ThreadGroup("thread pool");
-    private final BlockingQueue<Runnable> runQueue = new LinkedBlockingQueue<Runnable>();
+    private final BlockingQueue<PrioritizedJob> runQueue = new PriorityBlockingQueue<PrioritizedJob>();
+
     private volatile boolean running = true;
 
     public ThreadPool(int poolSize) {
@@ -20,11 +25,14 @@ public class ThreadPool {
     }
 
     public void submit(Runnable job, Priority priority) {
-        throw new UnsupportedOperationException("todo");
-    }
+       runQueue.add(new PrioritizedJob(job, priority));
 
+        //throw new UnsupportedOperationException("todo");
+    }
+    // Probably will starve low priority queues
     private Runnable take() throws InterruptedException {
-        return runQueue.take();
+       PrioritizedJob pj = runQueue.take();
+       return pj.job;
     }
 
     public int getRunQueueLength() {
@@ -55,5 +63,30 @@ public class ThreadPool {
 
     public enum Priority {
         HIGH, NORMAL, LOW
+    }
+    
+    private static class PrioritizedJob implements Comparable<PrioritizedJob>{
+        private static final AtomicLong nextSeq = new AtomicLong(0);
+        final long seq;
+        Runnable job;
+        Priority priority;
+
+        PrioritizedJob(Runnable job, Priority priority) {
+            this.job = job;
+            this.priority = priority;
+            this.seq = nextSeq.getAndIncrement();
+        }
+
+        public int compareTo(PrioritizedJob o) {
+            int result =  priority.compareTo(o.priority);  //To change body of implemented methods use File | Settings | File Templates.
+            if (result != 0) {
+                return result;
+            }
+            if (seq < o.seq)
+                return -1;
+            if (seq > o.seq)
+                return 1;
+            throw new IllegalStateException();
+        }
     }
 }

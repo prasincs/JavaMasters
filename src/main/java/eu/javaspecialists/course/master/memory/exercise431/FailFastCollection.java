@@ -20,6 +20,27 @@ public class FailFastCollection<E> implements Collection<E> {
         // full GC (System.gc()) and then check again for cleared weak
         // references.  If we still have uncleared weak references to
         // iterators, throw a ConcurrentModificationException
+        boolean unclearedIterator = false;
+        for (WeakReference<Iterator<E>> ref : iterators.keySet()) {
+            Iterator<E> iter = ref.get();
+            if (iter != null) {
+                unclearedIterator = true;
+                break;
+            }
+        }
+        if (unclearedIterator) {
+            System.gc();
+            for (WeakReference<Iterator<E>> ref : iterators.keySet()) {
+                if (ref.get() == null) {
+                    iterators.remove(ref);
+                }
+            }
+
+            if (iterators.size()  > 0){
+                throw new ConcurrentModificationException();
+            }
+
+        }
     }
 
     // Non-modifying safe operations
