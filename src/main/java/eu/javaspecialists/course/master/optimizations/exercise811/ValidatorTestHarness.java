@@ -12,6 +12,7 @@ public class ValidatorTestHarness {
             ClassNotFoundException {
         Validator[] validators = {
                 new ValidatorImpl(),
+                new NewValidatorImpl(),
                 // put your own Validator here
         };
         // CorrectnessTest.check(validators);
@@ -45,8 +46,8 @@ public class ValidatorTestHarness {
 
         int truecount = 0;
         for (int i = 0; i < REPEATS; i++) {
-            ObjectInputStream in = new ObjectInputStream(
-                    new FileInputStream(dataset));
+            ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(
+                    new FileInputStream(dataset)));
             truecount = 0;
             String s;
             while ((s = (String) in.readObject()) != null) {

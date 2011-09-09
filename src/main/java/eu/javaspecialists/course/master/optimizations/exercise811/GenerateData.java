@@ -3,7 +3,7 @@ package eu.javaspecialists.course.master.optimizations.exercise811;
 import java.io.*;
 import java.util.*;
 
-public class GenerateData {
+public class    GenerateData {
     public static final int ROWS_IN_DATASET = 1000 * 1000;
 
     public static void main(String[] args) throws IOException {

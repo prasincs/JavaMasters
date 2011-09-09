@@ -1,5 +1,8 @@
 package eu.javaspecialists.course.master.logging.exercise1011;
 
+import eu.javaspecialists.course.master.util.Benchmark;
+import sun.rmi.runtime.Log;
+
 import java.util.concurrent.*;
 import java.util.logging.*;
 
@@ -29,9 +32,11 @@ public class ThreadPool {
             Worker worker = new Worker(group, "Worker" + i);
             worker.setDaemon(false);
             worker.start();
-            // todo: log that the worker thread was created (include the name)
+            log.log(Level.INFO, "worker thread was created "+ "Worker "+ i);
+
         }
-        // todo: log that the thread pool was created (include the pool size)
+        log.log(Level.INFO, "thread pool was created of size "+ group.activeCount());
+
     }
 
     /**
@@ -45,15 +50,20 @@ public class ThreadPool {
         if (!running) {
             throw new IllegalStateException("pool shut down - cannot accept new jobs");
         }
-        // todo: log that the job was submitted, printing out the job
+        log.log(Level.INFO, "Job was submitted "+ job.toString());
         runQueue.add(job);
     }
 
     private Runnable take() throws InterruptedException {
         assert runQueue != null;
+        Benchmark bm = new Benchmark();
+        bm.start();
         Runnable job = runQueue.take();
+        bm.stop();
         assert job != null;
+
         // todo: log that the job was dequeued, printing out the job, wait time
+        log.log(Level.INFO, "Job was dequeued "+ job + " waiting time: "+ bm.toString());
         // of
         // todo: job in the queue, wait time of calling take()
         return job;
@@ -74,16 +84,25 @@ public class ThreadPool {
     private class Worker extends Thread {
         public Worker(ThreadGroup group, String name) {
             super(group, name);
+            log.log(Level.INFO, "Worker "+ name+ "has been started");
             // todo: log that the worker has been started
         }
+
+
 
         public void run() {
             while (running && !isInterrupted()) {
                 try {
                     // todo: log that the worker (with name) is waiting for task
+                    log.log(Level.INFO, "worker "+ this.getName()+ " has been waiting for task");
                     Runnable job = take();
+                    log.log(Level.INFO, "job "+ this.getName()+ " is about to be executed");
                     // todo: log that job is about to be executed
+                    Benchmark bm = new Benchmark();
+                    bm.start();
                     job.run();
+                    bm.stop();
+                    log.log(Level.INFO, "job was completed successfully "+ bm.toString() );
                     // todo: log that the job was completed successfully and its
                     // time
                 } catch (InterruptedException e) {
@@ -92,6 +111,7 @@ public class ThreadPool {
                 }
             }
             assert !running || isInterrupted();
+            log.log(Level.INFO, "worker "+ this.getName() + " was shut down!");
             // todo: log that the worker (with name) was shut down
         }
     }
